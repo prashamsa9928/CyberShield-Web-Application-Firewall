@@ -8,14 +8,14 @@ const app = express();
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 
-// ✅ OPTIONAL: serve frontend (safe)
+// ✅ OPTIONAL: serve frontend
 app.use(express.static(path.join(__dirname, "../waf_frontend")));
 
 // ✅ STORAGE
 let logs = [];
 let attackers = {};
 
-// ✅ RULES (WAF detection)
+// ✅ RULES
 const rules = [
     {
         name: "SQL Injection",
@@ -29,15 +29,13 @@ const rules = [
     }
 ];
 
-// ✅ WAF CHECK FUNCTION
+// ✅ WAF FUNCTION
 function checkAttack(input, ip) {
     for (let rule of rules) {
         if (rule.pattern.test(input)) {
 
-            // track attacker
             attackers[ip] = (attackers[ip] || 0) + 1;
 
-            // log attack
             logs.push({
                 ip: ip,
                 attack: rule.name,
@@ -56,7 +54,7 @@ function checkAttack(input, ip) {
     return { detected: false };
 }
 
-// ✅ SIMULATE ATTACK (BUTTON)
+// ✅ SIMULATE ATTACK
 app.post("/analytics", (req, res) => {
     const input = req.body.input || "";
     const ip = req.ip;
@@ -73,9 +71,8 @@ app.post("/analytics", (req, res) => {
     res.json({ message: "✅ Safe Request" });
 });
 
-// ✅ FETCH DATA (LOAD ANALYTICS BUTTON)
+// ✅ GET DATA (VERY IMPORTANT)
 app.get("/api", (req, res) => {
-
     const high = logs.filter(l => l.severity === "HIGH").length;
 
     res.json({
@@ -87,12 +84,19 @@ app.get("/api", (req, res) => {
     });
 });
 
-// ✅ ROOT CHECK
+// ✅ RESET (FOR DEMO)
+app.get("/reset", (req, res) => {
+    logs = [];
+    attackers = {};
+    res.send("Reset done");
+});
+
+// ✅ ROOT
 app.get("/", (req, res) => {
     res.send("CyberShield Backend Running 🚀");
 });
 
-// ✅ PORT FIX (VERY IMPORTANT FOR RENDER)
+// ✅ PORT FIX
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
