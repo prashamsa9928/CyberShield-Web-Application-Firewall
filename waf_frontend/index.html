@@ -69,10 +69,13 @@
 <script>
 let chart;
 
-// LOAD DATA FROM BACKEND
+// ✅ BACKEND URL (CHANGE HERE IF NEEDED)
+const BASE_URL = "https://cybershield-web-application-firewall.onrender.com";
+
+// ✅ LOAD DATA
 async function loadData() {
     try {
-        const res = await fetch("fetch("https://cybershield-web-application-firewall.onrender.com/api", {");
+        const res = await fetch(BASE_URL + "/api");
         const data = await res.json();
 
         document.getElementById("total").innerText = data.totalAttacks;
@@ -87,27 +90,25 @@ async function loadData() {
                 ? JSON.stringify(data.attackers, null, 2)
                 : "No attackers";
 
-        // 🔴 STATUS CHANGE
+        // 🔴 STATUS
         const status = document.getElementById("status");
         if (data.highSeverity > 0) {
             status.innerText = "🚨 UNDER ATTACK!";
             status.style.color = "red";
-            status.style.animation = "blink 1s infinite";
         } else {
             status.innerText = "System Secure ✅";
             status.style.color = "lightgreen";
-            status.style.animation = "none";
         }
 
-        // 📊 UPDATE GRAPH
         updateChart(data.highSeverity, data.mediumSeverity);
 
     } catch (err) {
         console.log("Error:", err);
+        alert("Backend not responding ⚠️");
     }
 }
 
-// 📊 CHART FUNCTION
+// ✅ GRAPH
 function updateChart(high, medium) {
     const ctx = document.getElementById("attackChart");
 
@@ -125,21 +126,28 @@ function updateChart(high, medium) {
     });
 }
 
-// 🚨 SIMULATE ATTACK
+// ✅ SIMULATE ATTACK
 async function simulateAttack() {
-    await fetch("https://cybershield-web-application-firewall.onrender.com/api", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            input: "DROP TABLE users"
-        })
-    });
+    try {
+        await fetch(BASE_URL + "/analytics", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                input: "DROP TABLE users"
+            })
+        });
 
-    loadData();
+        loadData();
+
+    } catch (err) {
+        console.log("Error:", err);
+        alert("Simulation failed ⚠️");
+    }
 }
 
-// 🔁 AUTO REFRESH
-//setInterval(loadData, 5000);
+// ✅ AUTO LOAD ON PAGE OPEN (IMPORTANT FOR DEMO)
+window.onload = loadData;
+
 </script>
 
 </body>
