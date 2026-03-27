@@ -4,19 +4,22 @@ const path = require("path");
 
 const app = express();
 
-app.use(cors());
+// ✅ MIDDLEWARE
+app.use(cors({ origin: "*" }));
 app.use(express.json());
+
+// ✅ OPTIONAL: serve frontend (safe)
 app.use(express.static(path.join(__dirname, "../waf_frontend")));
 
-// storage
+// ✅ STORAGE
 let logs = [];
 let attackers = {};
 
-// rules
+// ✅ RULES (WAF detection)
 const rules = [
     {
         name: "SQL Injection",
-        pattern: /(SELECT|DROP|INSERT|DELETE|--)/i,
+        pattern: /(SELECT|DROP|INSERT|DELETE|UPDATE|--)/i,
         severity: "HIGH"
     },
     {
@@ -26,46 +29,52 @@ const rules = [
     }
 ];
 
-// WAF middleware
-app.use((req, res, next) => {
-
-    const data = JSON.stringify(req.body) + req.url;
-
+// ✅ WAF CHECK FUNCTION
+function checkAttack(input, ip) {
     for (let rule of rules) {
-        if (rule.pattern.test(data)) {
+        if (rule.pattern.test(input)) {
 
-            const ip = req.ip;
-
+            // track attacker
             attackers[ip] = (attackers[ip] || 0) + 1;
 
+            // log attack
             logs.push({
                 ip: ip,
                 attack: rule.name,
                 severity: rule.severity,
+                input: input,
                 time: new Date().toLocaleString()
             });
 
-            return res.status(403).json({
-                message: "Blocked by WAF",
-                attack: rule.name
-            });
+            return {
+                detected: true,
+                type: rule.name
+            };
         }
     }
 
-    next();
+    return { detected: false };
+}
+
+// ✅ SIMULATE ATTACK (BUTTON)
+app.post("/analytics", (req, res) => {
+    const input = req.body.input || "";
+    const ip = req.ip;
+
+    const result = checkAttack(input, ip);
+
+    if (result.detected) {
+        return res.json({
+            message: "🚨 Attack Detected",
+            type: result.type
+        });
+    }
+
+    res.json({ message: "✅ Safe Request" });
 });
 
-// test route
-app.post("/api", (req, res) => {
-    res.json({ message: "Request allowed ✅" });
-});
-
-app.get("/", (req, res) => {
-    res.send("CyberShield Backend Running 🚀");
-});
-
-// analytics route
-app.get("/analytics", (req, res) => {
+// ✅ FETCH DATA (LOAD ANALYTICS BUTTON)
+app.get("/api", (req, res) => {
 
     const high = logs.filter(l => l.severity === "HIGH").length;
 
@@ -78,7 +87,14 @@ app.get("/analytics", (req, res) => {
     });
 });
 
-// start server
-app.listen(3000, () => {
-    console.log("🔥 Server running at http://localhost:3000");
+// ✅ ROOT CHECK
+app.get("/", (req, res) => {
+    res.send("CyberShield Backend Running 🚀");
+});
+
+// ✅ PORT FIX (VERY IMPORTANT FOR RENDER)
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log("🔥 Server running on port " + PORT);
 });
