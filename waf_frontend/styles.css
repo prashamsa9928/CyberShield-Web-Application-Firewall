@@ -1,0 +1,126 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+}
+
+/* SIDEBAR */
+.sidebar {
+    position: fixed;
+    width: 220px;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(10px);
+    padding-top: 20px;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+}
+
+.sidebar h2 {
+    text-align: center;
+    color: #00f2fe;
+    margin-bottom: 20px;
+}
+
+.sidebar a {
+    display: block;
+    padding: 15px;
+    color: #ccc;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.sidebar a:hover {
+    background: #00f2fe;
+    color: black;
+}
+
+/* MAIN */
+.main {
+    margin-left: 220px;
+    padding: 20px;
+    text-align: center;
+}
+
+/* HEADER TITLE */
+.title {
+    font-size: 2.5rem;
+    background: linear-gradient(90deg, #00f2fe, #4facfe);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 20px rgba(0,255,255,0.4);
+}
+
+/* GLASS CARD */
+.card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    margin: 15px;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    transition: 0.3s;
+}
+
+/* CARD HOVER */
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 0 25px rgba(0,255,150,0.6);
+}
+
+/* CONTAINER */
+.container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* BUTTONS */
+button {
+    background: linear-gradient(90deg, #00f2fe, #4facfe);
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 10px;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px #00f2fe;
+}
+
+/* ATTACK BUTTON */
+.btn.attack {
+    background: red;
+    color: white;
+    box-shadow: 0 0 15px red;
+}
+
+/* LOG DISPLAY */
+pre {
+    background: black;
+    padding: 10px;
+    height: 200px;
+    overflow: auto;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+/* STATUS */
+#status {
+    font-weight: bold;
+    margin-top: 10px;
+    font-size: 18px;
+    letter-spacing: 1px;
+}
+
+/* BLINK ANIMATION */
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+}

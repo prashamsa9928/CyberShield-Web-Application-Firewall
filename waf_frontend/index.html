@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CyberShield Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>🛡️ CyberShield</h2>
+    <a href="index.html">🏠 Dashboard</a>
+    <a href="analytics.html">📊 Analytics</a>
+    <a href="logs.html">📄 Logs</a>
+</div>
+
+<div class="main">
+
+    <h1 class="title">🛡️ CyberShield WAF Dashboard</h1>
+
+    <div class="card highlight">
+        <h2>🔥 Web Application Firewall</h2>
+        <p>
+            Detects SQL Injection, XSS attacks, logs threats,
+            assigns severity levels, and tracks attackers in real-time.
+        </p>
+    </div>
+
+    <p id="status" class="status">System Status: Secure ✅</p>
+
+    <!-- BUTTONS -->
+    <button onclick="loadData()" class="btn">Load Analytics</button>
+
+    <button onclick="simulateAttack()" class="btn attack">
+        🚨 Simulate Attack
+    </button>
+
+    <!-- STATS -->
+    <div class="container">
+        <div class="card"><h2>Total Attacks</h2><h3 id="total">0</h3></div>
+        <div class="card"><h2>High Severity</h2><h3 id="high">0</h3></div>
+        <div class="card"><h2>Medium Severity</h2><h3 id="medium">0</h3></div>
+    </div>
+
+    <!-- 📊 GRAPH -->
+    <div class="card large">
+        <h2>📊 Attack Overview</h2>
+        <canvas id="attackChart"></canvas>
+    </div>
+
+    <!-- LOGS -->
+    <div class="container">
+        <div class="card large">
+            <h2>📄 Attack Logs</h2>
+            <pre id="logs">No attacks yet</pre>
+        </div>
+
+        <div class="card large">
+            <h2>🌐 Attackers (IP Count)</h2>
+            <pre id="attackers">No attackers</pre>
+        </div>
+    </div>
+
+</div>
+
+<!-- 📊 CHART LIBRARY -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+let chart;
+
+// LOAD DATA FROM BACKEND
+async function loadData() {
+    try {
+        const res = await fetch("http://localhost:3000/analytics");
+        const data = await res.json();
+
+        document.getElementById("total").innerText = data.totalAttacks;
+        document.getElementById("high").innerText = data.highSeverity;
+        document.getElementById("medium").innerText = data.mediumSeverity;
+
+        document.getElementById("logs").innerText =
+            data.logs.length ? JSON.stringify(data.logs, null, 2) : "No attacks yet";
+
+        document.getElementById("attackers").innerText =
+            Object.keys(data.attackers).length
+                ? JSON.stringify(data.attackers, null, 2)
+                : "No attackers";
+
+        // 🔴 STATUS CHANGE
+        const status = document.getElementById("status");
+        if (data.highSeverity > 0) {
+            status.innerText = "🚨 UNDER ATTACK!";
+            status.style.color = "red";
+            status.style.animation = "blink 1s infinite";
+        } else {
+            status.innerText = "System Secure ✅";
+            status.style.color = "lightgreen";
+            status.style.animation = "none";
+        }
+
+        // 📊 UPDATE GRAPH
+        updateChart(data.highSeverity, data.mediumSeverity);
+
+    } catch (err) {
+        console.log("Error:", err);
+    }
+}
+
+// 📊 CHART FUNCTION
+function updateChart(high, medium) {
+    const ctx = document.getElementById("attackChart");
+
+    if (chart) chart.destroy();
+
+    chart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: ["High", "Medium"],
+            datasets: [{
+                label: "Attack Severity",
+                data: [high, medium]
+            }]
+        }
+    });
+}
+
+// 🚨 SIMULATE ATTACK
+async function simulateAttack() {
+    await fetch("http://localhost:3000/api", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            input: "DROP TABLE users"
+        })
+    });
+
+    loadData();
+}
+
+// 🔁 AUTO REFRESH
+//setInterval(loadData, 5000);
+</script>
+
+</body>
+</html>

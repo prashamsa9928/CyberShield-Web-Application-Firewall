@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analytics</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>CyberShield</h2>
+    <a href="index.html">Dashboard</a>
+    <a href="analytics.html">Analytics</a>
+    <a href="logs.html">Logs</a>
+</div>
+
+<div class="main">
+
+    <h1>📊 Threat Analytics</h1>
+
+    <div class="card">
+        <h2>Attack Distribution</h2>
+        <img src="https://quickchart.io/chart?c={type:'bar',data:{labels:['SQL','XSS'],datasets:[{label:'Attacks',data:[5,3]}]}}" width="100%">
+    </div>
+
+    <div class="container">
+        <div class="card"><h2>Top Attack</h2><p>SQL Injection</p></div>
+        <div class="card"><h2>Threat Level</h2><p style="color:red;">HIGH</p></div>
+        <div class="card"><h2>Blocked Requests</h2><p>8</p></div>
+    </div>
+
+</div>
+
+</body>
+</html>
