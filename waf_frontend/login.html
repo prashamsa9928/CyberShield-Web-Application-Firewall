@@ -1,3 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CyberShield - Real Input</title>
+</head>
+
+<body style="text-align:center; margin-top:100px; font-family:Arial;">
+
+<h1>🔐 Real-Time WAF Test</h1>
+
+<form onsubmit="sendRequest(event)">
+    <input type="text" id="input" placeholder="Enter input" required>
+    <br><br>
+    <button type="submit">Submit</button>
+</form>
+
+<h2 id="result"></h2>
+
 <script>
 const BASE_URL = "https://cybershield-web-application-firewall.onrender.com";
 
@@ -6,16 +24,25 @@ async function sendRequest(e) {
 
     const input = document.getElementById("input").value;
 
-    const res = await fetch(BASE_URL + "/analytics", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ input })
-    });
+    try {
+        const res = await fetch(BASE_URL + "/analytics", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ input })
+        });
 
-    const data = await res.json();
+        const data = await res.json();
 
-    document.getElementById("result").innerText = data.message;
+        document.getElementById("result").innerText = data.message;
+
+    } catch (err) {
+        document.getElementById("result").innerText = "Server error";
+        console.log(err);
+    }
 }
 </script>
+
+</body>
+</html>
