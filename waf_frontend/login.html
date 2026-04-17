@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CyberShield - Secure Input</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f2027;
+            color: white;
+            text-align: center;
+            padding: 50px;
+        }
+
+        input {
+            padding: 10px;
+            margin: 10px;
+            width: 250px;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #00f2fe;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>🔐 Secure Input (Real-time WAF)</h1>
+
+<form onsubmit="sendRequest(event)">
+    <input type="text" id="input" placeholder="Enter something" required>
+    <br>
+    <button type="submit">Submit</button>
+</form>
+
+<h2 id="result"></h2>
+
+<script>
+const BASE_URL = "https://cybershield-web-application-firewall.onrender.com";
+
+async function sendRequest(e) {
+    e.preventDefault();
+
+    const input = document.getElementById("input").value;
+
+    const res = await fetch(BASE_URL + "/analytics", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ input })
+    });
+
+    const data = await res.json();
+
+    document.getElementById("result").innerText = data.message;
+}
+</script>
+
+</body>
+</html>
