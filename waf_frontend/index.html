@@ -35,6 +35,14 @@
         🚨 Simulate Attack
     </button>
 
+    <!-- 🔥 REAL-TIME INPUT (FIXED POSITION) -->
+    <div class="card">
+        <h2>🔐 Real-Time Input</h2>
+        <input type="text" id="userInput" placeholder="Enter input">
+        <button onclick="sendRealRequest()" class="btn">Submit</button>
+        <p id="result"></p>
+    </div>
+
     <!-- STATS -->
     <div class="container">
         <div class="card"><h2>Total Attacks</h2><h3 id="total">0</h3></div>
@@ -63,13 +71,11 @@
 
 </div>
 
-<!-- 📊 CHART LIBRARY -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
 let chart;
 
-// ✅ BACKEND URL (CHANGE HERE IF NEEDED)
 const BASE_URL = "https://cybershield-web-application-firewall.onrender.com";
 
 // ✅ LOAD DATA
@@ -90,7 +96,6 @@ async function loadData() {
                 ? JSON.stringify(data.attackers, null, 2)
                 : "No attackers";
 
-        // 🔴 STATUS
         const status = document.getElementById("status");
         if (data.highSeverity > 0) {
             status.innerText = "🚨 UNDER ATTACK!";
@@ -104,7 +109,6 @@ async function loadData() {
 
     } catch (err) {
         console.log("Error:", err);
-        alert("Backend not responding ⚠️");
     }
 }
 
@@ -128,26 +132,34 @@ function updateChart(high, medium) {
 
 // ✅ SIMULATE ATTACK
 async function simulateAttack() {
-    try {
-        await fetch(BASE_URL + "/analytics", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                input: "DROP TABLE users"
-            })
-        });
+    await fetch(BASE_URL + "/analytics", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: "DROP TABLE users" })
+    });
 
-        loadData();
-
-    } catch (err) {
-        console.log("Error:", err);
-        alert("Simulation failed ⚠️");
-    }
+    loadData();
 }
 
-// ✅ AUTO LOAD ON PAGE OPEN (IMPORTANT FOR DEMO)
-window.onload = loadData;
+// ✅ REAL INPUT (MAIN FEATURE)
+async function sendRealRequest() {
+    const input = document.getElementById("userInput").value;
 
+    const res = await fetch(BASE_URL + "/analytics", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input })
+    });
+
+    const data = await res.json();
+
+    document.getElementById("result").innerText = data.message;
+
+    loadData(); // 🔥 auto update dashboard
+}
+
+// ✅ AUTO LOAD
+window.onload = loadData;
 </script>
 
 </body>
